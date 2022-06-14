@@ -30,6 +30,7 @@ export default function Grid({ collection, fields, url }) {
 
   const [ob1, setob1] = useState(transformIntoOb(fields, false))
   const [ob2, setob2] = useState(transformIntoOb(fields, true))
+  const [b, setb] = useState([])
   const [a, seta] = useState([])
 
   const insert = () => {
@@ -75,10 +76,61 @@ export default function Grid({ collection, fields, url }) {
       .catch(err => console.log(`something went wrong :: ${err}`))
   }
 
+  const handleFileChange = e => {
+    let file = e.target.files[0]
+    let fr = new FileReader()
+
+    fr.onload = () => {
+      setb(fr.result)
+      console.log(fr.result)
+    }
+
+    if (file) {
+      return fr.readAsText(file)
+    }
+
+  }
+
+  const convertoob = (x, y) => {
+    let temp = {}
+    for (let i = 0; i < x.length; i++) {
+      temp = { ...temp, [x]: y[i] }
+    }
+    return temp
+  }
+
+  const toCSV = temp => {
+    let d = temp.trim().split("\n").map(x => x.split(","))
+    let f = []
+    for (let i = 0; i < d.length; i++) {
+      f[i] = convertoob(fields, d[i])
+    }
+
+    return f
+  }
+  const upload = async () => {
+    let c = toCSV(b)
+    // console.log(c)
+    for (let item of c) {
+      axios.post(`${url}${collection}.json`, item)
+        .then(d => d.data)
+        .then(d => d.name)
+        .then(d => [...a, { ...ob1, id: d }])
+        .then(d => seta(d))
+        .catch(err => console.log(`something went wrong`))
+    }
+
+  }
+
   useEffect(boot, [])
 
   return (
     <div>
+      <div>
+        <h1>import</h1>
+        <input type="file" onChange={handleFileChange} />
+        <button onClick={upload}>import</button>
+      </div>
       <div>
         <h1>insert</h1>
         {fields.map(x => <input
@@ -90,16 +142,18 @@ export default function Grid({ collection, fields, url }) {
         <button onClick={insert}>insert</button>
       </div>
 
-      {ob2.id && <div>
-        <h1>edit</h1>
-        {fields.map(x => <input
-          placeholder={x}
-          name={x}
-          value={ob2[x]}
-          onChange={handleChange2}
-        />)}
-        <button onClick={update}>update</button>
-      </div>}
+      {
+        ob2.id && <div>
+          <h1>edit</h1>
+          {fields.map(x => <input
+            placeholder={x}
+            name={x}
+            value={ob2[x]}
+            onChange={handleChange2}
+          />)}
+          <button onClick={update}>update</button>
+        </div>
+      }
 
       <h1>all {collection}</h1>
       <table>
@@ -124,6 +178,6 @@ export default function Grid({ collection, fields, url }) {
 
       </table>
 
-    </div>
+    </div >
   )
 }
