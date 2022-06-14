@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import xlsx from 'json-as-xlsx'
 export default function Grid({ collection, fields, url }) {
 
   const transformResponse = resp => {
@@ -105,9 +106,11 @@ export default function Grid({ collection, fields, url }) {
     for (let i = 0; i < d.length; i++) {
       f[i] = convertoob(fields, d[i])
     }
-
+    setb(f)
     return f
   }
+
+
   const upload = async () => {
     let c = toCSV(b)
     // console.log(c)
@@ -122,10 +125,34 @@ export default function Grid({ collection, fields, url }) {
 
   }
 
+  const download = () => {
+    console.log("lkj", b)
+    let data = [
+      {
+        sheet: "report",
+        columns: fields.map(x => ({ label: x, value: x })),
+        content: a,
+      },
+    ]
+
+    let settings = {
+      fileName: "grid-download-rs", // Name of the resulting spreadsheet
+      extraLength: 3, // A bigger number means that columns will be wider
+      writeOptions: {}, // Style options from https://github.com/SheetJS/sheetjs#writing-options
+    }
+
+    xlsx(data, settings)
+  }
+
+
   useEffect(boot, [])
 
   return (
     <div>
+      <div>
+        <h1>export</h1>
+        <button onClick={download}>export</button>
+      </div>
       <div>
         <h1>import</h1>
         <input type="file" onChange={handleFileChange} />
