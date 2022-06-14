@@ -1,8 +1,8 @@
 import React from 'react'
 import Grid from './Grid'
 export default function App() {
-    const fields = ["name", "email","phone","pass","conf","gender","country","city","state","pincode"]
-    const collection = "p1"
+    const fields = ["name"]
+    const collection = "p2"
     return (
         <div>
             <Grid

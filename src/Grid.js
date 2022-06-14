@@ -44,11 +44,18 @@ export default function Grid({ collection, fields, url }) {
   const edit = (x) => {
     setob2(x)
   }
-  const del = () => {
-
+  const del = (id) => {
+    axios.delete(`${url}${collection}/${id}.json`)
+      .then(res => a.filter(x => x.id !== id))
+      .then(d => seta(d))
+      .catch(err => console.log(`something went wrong`))
   }
   const update = () => {
-
+    axios.patch(`${url}${collection}/${ob2.id}.json`, ob2)
+      .then(res => a.map(x => x.id === ob2.id ? ob2 : x))
+      .then(d => seta(d))
+      .catch(err => console.log(`something went wrong`))
+      .finally(() => setob2({ id: "" }))
   }
   const handleChange1 = e => {
     let { name, value } = e.target
