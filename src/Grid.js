@@ -95,7 +95,7 @@ export default function Grid({ collection, fields, url }) {
   const convertoob = (x, y) => {
     let temp = {}
     for (let i = 0; i < x.length; i++) {
-      temp = { ...temp, [x]: y[i] }
+      temp = { ...temp, [x[i]]: y[i] }
     }
     return temp
   }
@@ -106,12 +106,13 @@ export default function Grid({ collection, fields, url }) {
     for (let i = 0; i < d.length; i++) {
       f[i] = convertoob(fields, d[i])
     }
-    setb(f)
     return f
   }
 
 
   const upload = async () => {
+    setb(toCSV(b))
+
     let c = toCSV(b)
     // console.log(c)
     for (let item of c) {
